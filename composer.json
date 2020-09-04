@@ -1,0 +1,70 @@
+{
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://wpackagist.org"
+    }
+  ],
+  "require": {
+    "johnpbloch/wordpress": "^5.4",
+    "wpackagist-theme/twentytwenty": "1.2",
+    "wpackagist-plugin/jwt-auth": "1.4.1",
+    "wpackagist-plugin/wp-rest-user": "^1.4"
+  },
+  "require-dev": {
+    "wpackagist-plugin/query-monitor": "^3.6",
+    "wpackagist-plugin/fakerpress": "0.5.0",
+    "wp-cli/wp-cli": "2.4.0",
+    "wp-cli/core-command": "2.0.8",
+    "wp-cli/language-command": "2.0.5",
+    "wp-cli/config-command": "2.0.5",
+    "wp-cli/extension-command": "2.0.9",
+    "wp-cli/rewrite-command": "2.0.4"
+  },
+  "extra": {
+    "wordpress-install-dir": "wp",
+    "installer-paths": {
+      "content/themes/{$name}": [
+        "type:wordpress-theme"
+      ],
+      "content/plugins/{$name}": [
+        "type:wordpress-plugin"
+      ]
+    }
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "cp -n wp-config-sample.php wp-config.php"
+    ],
+    "wordpress-activate-debug": "./vendor/bin/wp config set WP_DEBUG true --raw",
+    "wordpress-activate-development-environment": "./vendor/bin/wp config set ENVIRONMENT development",
+    "wordpress-activate-staging-environment": "./vendor/bin/wp config set ENVIRONMENT staging",
+    "wordpress-activate-theme": "./vendor/bin/wp theme activate twentytwenty",
+    "wordpress-activate-plugins": "./vendor/bin/wp plugin activate --all",
+    "wordpress-download-translations": [
+      "./vendor/bin/wp language core install fr_FR",
+      "./vendor/bin/wp language plugin install fr_FR --all",
+      "./vendor/bin/wp language theme install fr_FR --all",
+      "./vendor/bin/wp language core activate fr_FR"
+    ],
+    "wordpress-shuffle-salts": "./vendor/bin/wp config shuffle-salts",
+    "wordpress-set-rewrite-structure": "./vendor/bin/wp rewrite structure '/%postname%/'",
+    "wordpress-configure": [
+      "composer run-script wordpress-shuffle-salts",
+      "composer run-script wordpress-activate-plugins",
+      "composer run-script wordpress-activate-theme",
+      "composer run-script wordpress-download-translations",
+      "composer run-script wordpress-set-rewrite-structure"
+    ],
+    "wordpress-configure-development": [
+      "composer run-script wordpress-configure",
+      "composer run-script wordpress-activate-debug",
+      "composer run-script wordpress-activate-development-environment"
+    ],
+    "wordpress-configure-staging": [
+      "composer run-script wordpress-configure",
+      "composer run-script wordpress-activate-debug",
+      "composer run-script wordpress-activate-development-environment"
+    ]
+  }
+}
